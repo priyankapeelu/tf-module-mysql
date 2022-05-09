@@ -5,8 +5,8 @@ resource "aws_security_group" "allow_mysql" {
 
   ingress {
     description = "TLS from VPC"
-    from_port   = var.RDS_MYSQL_PORT
-    to_port     = var.RDS_MYSQL_PORT
+    from_port   = 3306
+    to_port     = 3306
     protocol    = "tcp"
     cidr_blocks = [data.terraform_remote_state.vpc.outputs.VPC_CIDR, var.WORKSTATION_IP]
   }
@@ -26,12 +26,12 @@ resource "aws_security_group" "allow_mysql" {
 
 resource "aws_db_instance" "mysql" {
   identifier             = "roboshop-mysql-${var.ENV}"
-  allocated_storage      = var.RDS_MYSQL_STORAGE
+  allocated_storage      = 10
   engine                 = "mysql"
-  engine_version         = var.RDS_ENGINE_VERSION
-  instance_class         = var.RDS_INSTANCE_TYPE
-  username               = jsondecode(data.aws_secretsmanager_secret_version.secrets.secret_string)["RDS_MYSQL_USERNAME"]
-  password               = jsondecode(data.aws_secretsmanager_secret_version.secrets.secret_string)["RDS_MYSQL_PASSWORD"]
+  engine_version         = "5.7"
+  instance_class         = "db.t3.micro"
+  username               = "admin1"
+  password               = "RoboShop1"
   parameter_group_name   = aws_db_parameter_group.mysql.name
   skip_final_snapshot    = true
   db_subnet_group_name   = aws_db_subnet_group.mysql.name
@@ -40,8 +40,8 @@ resource "aws_db_instance" "mysql" {
 
 
 resource "aws_db_parameter_group" "mysql" {
-  name   = "roboshop-mysql-${var.ENV}"
-  family = "mysql${var.RDS_ENGINE_VERSION}"
+  name   = "roboshop-${var.ENV}"
+  family = "mysql5.7"
 }
 
 resource "aws_db_subnet_group" "mysql" {
