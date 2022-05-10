@@ -48,7 +48,7 @@ resource "aws_db_instance" "mysql" {
 
 resource "aws_db_parameter_group" "mysql" {
   name   = "roboshop-${var.ENV}"
-  family = "mysql5.7"
+  family = "mysql${var.RDS_ENGINE_VERSION}"
 }
 
 resource "aws_db_subnet_group" "mysql" {
